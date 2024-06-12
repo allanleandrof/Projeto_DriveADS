@@ -33,3 +33,15 @@ admin.firestore().collection('metrics').get()
     console.log('Valores das métricas "NumOpenQR" e "NumPassed" atualizados com sucesso');
   })
   .catch(error => console.error('Erro ao atualizar valores das métricas:', error));
+
+
+admin.firestore().collection('metrics').get()
+    .then(response => {
+        const datas = response.docs.map(doc => ({
+            ...doc.data(),
+            uid: doc.id,
+        }));
+
+        console.log(datas);
+    })
+    .catch(error => console.error(error));
