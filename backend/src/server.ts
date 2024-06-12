@@ -2,8 +2,10 @@ import admin from 'firebase-admin';
 import schedule from 'node-schedule';
 
 enum MetricType {
-  OPEN_QR = 'NumOpenQR',
-  NUM_PASSED = 'NumPassed',
+  OPEN_QR = 'NumOpenQR', //Total de vezes que o qrcode foi aberto
+  NUM_PASSED = 'NumPassed', //Pessoas que passaram pelo autdoor
+  CHECK_QR = 'SingleCheckQr', //Numero de usuarios individuais que acessaram o qrcode
+  PASSED_LOCKED = 'PassedLocked' //Pessoas que passaram pelo autdoor e o olharam
 };
 
 admin.initializeApp({
@@ -25,16 +27,26 @@ schedule.scheduleJob('*/10 * * * * *', function() {
 
         if (data.metricName === MetricType.OPEN_QR) {
           const previousValue = data.value || 0;
-          const randomFactor = 0.9 + Math.random() * 0.2;
+          const randomIncrement = Math.floor(Math.random() * 4) + 1; // Incremento aleatório entre 1 e 4
 
-          newValue = Math.ceil(previousValue * randomFactor);
+          newValue = previousValue + randomIncrement;
         } else if (data.metricName === MetricType.NUM_PASSED) {
           const previousValue = data.value || 0;
-          const randomIncrement = Math.floor(Math.random() * 5) + 1; // Incremento aleatório entre 1 e 5
+          const randomIncrement = Math.floor(Math.random() * 9) + 1; // Incremento aleatório entre 1 e 9
+
+          newValue = previousValue + randomIncrement;
+        } else if (data.metricName === MetricType.CHECK_QR) {
+          const previousValue = data.value || 0;
+          const randomIncrement = Math.floor(Math.random() * 2) + 1; // Incremento aleatório entre 1 e 2
+
+          newValue = previousValue + randomIncrement;
+        } else if (data.metricName === MetricType.PASSED_LOCKED) {
+          const previousValue = data.value || 0;
+          const randomIncrement = Math.floor(Math.random() * 6) + 1; // Incremento aleatório entre 1 e 6
 
           newValue = previousValue + randomIncrement;
         } else {
-          // Se a métrica não for "NumOpenQR" nem "NumPassed", mantém o valor atual
+          // Se a métrica não for "NumOpenQR", "NumPassed", "SingleCheckQr" nem "PassedLocked", mantém o valor atual
           return Promise.resolve();
         }
 
